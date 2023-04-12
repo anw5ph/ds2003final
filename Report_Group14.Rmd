@@ -1,0 +1,168 @@
+---
+title: "Final Report - Group 14"
+author: "Alexander Williams (anw5ph), Evelyn Tse (eyt7ph), Sam Remmey (sqr8ap), Brendan Keaton (pkt9we)"
+
+output: 
+    html_document:
+      number_sections: no
+      # toc: TRUE
+      # toc_depth: 4
+      # toc_float: true
+      # toc_collapsed: true
+      theme: journal
+      code_folding: show
+      
+runtime: shiny
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+library(knitr)
+library(tidyverse)
+library(plotly)
+library(foreign)
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(RColorBrewer)
+library(cowplot)
+library(shiny)
+library(ggmap)
+library(magick)
+
+google_key = "AIzaSyDCSByXShr7nqZN1_6WLxHnLIGCmBVyvI0"
+
+# Insert your API key to get your google map for this session
+# -------------------------------------------------------------
+register_google(key = google_key)
+
+
+# Insert your API key to get your google map permanently
+# -------------------------------------------------------------
+register_google(key = google_key, write = TRUE)
+# register_google()
+google_key()
+
+```
+
+# Analyzing Trends Regarding Gun Violence in New York City
+
+## Introduction / Abstract
+
+## Dataset Summary 
+
+```{r}
+
+nypd <- read_csv("nypd_shootings.csv")
+
+```
+
+## Question 1
+
+### Question
+Which New York City borough had the most shootings in 2022? Were there regions of especially high incident density within this borough or other boroughs? Additionally, how did the time of day, time of year, or sex of the perpetrator affect the density of shootings in different boroughs?
+
+### Chart & Chart Caption
+```{r}
+
+nypd <- nypd %>% drop_na(Latitude)
+
+shinyApp(
+  ui = fluidPage(
+    titlePanel("New York City Violent Crime Analysis by Sex"),
+    selectInput("span", label = "Filter by Sex: ",
+              choices = c("All", "Male", "Female"),
+              selected = "All"),
+    # mainPanel("main panel", 
+    #           fluidRow(
+    #             column(6, plotOutput(outputId = "shoot_plot")),
+    #             column(6, plotOutput(outputId = "nypd_plot"))
+    #           )
+    #         )
+    #
+    mainPanel(fluidRow((column(12, align = "center", plotOutput(outputId = "shoot_plot")))))
+  ),
+
+  server = function(input, output){
+    
+    pt2 <- reactive({
+      nypd_sex <- nypd
+      
+      if (input$span == "Male") {
+        nypd_sex <- subset(nypd, PERP_SEX == "M")
+      }
+      
+      else if (input$span == "Female") {
+        nypd_sex <- subset(nypd, PERP_SEX == "F")
+      }
+      
+      
+      kdeout <- nypd_sex %>% 
+      with( 
+        MASS::kde2d(Longitude, Latitude, n = 101,
+          lims = c(
+            scales::expand_range(range(Longitude), .20),
+            scales::expand_range(range(Latitude), .20)
+          )
+        )
+      )
+
+      kde_df <- kdeout %>% 
+        .[c("x", "y")] %>% 
+        cross_df() %>% 
+        rename("Longitude" = "x", "Latitude" = "y") %>% 
+        mutate(density = as.vector(kdeout$z)) 
+      
+      (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
+      map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
+
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
+    
+    })
+    #output$nypd_plot = renderPlot({pt1})
+    output$shoot_plot = renderPlot({pt2()})
+    
+   }
+)
+
+
+
+
+```
+
+```{r fig.align='center'}
+
+p1 <- ggdraw() + draw_image("nyc_map_plot.png")
+p2 <- ggdraw() + draw_image("nyc_map.jpg")
+
+
+plot_grid(p1, NULL, p2, nrow = 1, rel_widths = c(10, 2, 10))
+
+```
+
+
+### Discussion 
+
+### Chart & Widget Justification
+
+## Question 2
+
+### Question
+
+### Chart & Chart Caption
+
+### Discussion 
+
+### Chart & Widget Justification
+
+## Conclusion
+
+
+
+
+
+
+
+
