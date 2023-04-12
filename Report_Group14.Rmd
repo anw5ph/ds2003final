@@ -72,16 +72,17 @@ nypd <- nypd %>% drop_na(Latitude)
 shinyApp(
   ui = fluidPage(
     titlePanel("New York City Violent Crime Analysis by Sex"),
-    selectInput("span", label = "Filter by Sex: ",
+    # Sex Picker
+    selectInput("span", label = h4("Filter by Sex: "),
               choices = c("All", "Male", "Female"),
               selected = "All"),
-    # mainPanel("main panel", 
-    #           fluidRow(
-    #             column(6, plotOutput(outputId = "shoot_plot")),
-    #             column(6, plotOutput(outputId = "nypd_plot"))
-    #           )
-    #         )
-    #
+    
+    # Date Picker
+    dateRangeInput("dates", label = h4("Date Range: ")),
+    
+    # Time Picker
+    sliderInput("sliderRange", label = h4("Slider Range: "), min = 0, max = 100, value = c(40, 60)),
+ 
     mainPanel(fluidRow((column(12, align = "center", plotOutput(outputId = "shoot_plot")))))
   ),
 
