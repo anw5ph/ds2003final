@@ -31,6 +31,7 @@ library(cowplot)
 library(shiny)
 library(ggmap)
 library(magick)
+library(gridExtra)
 
 google_key = "AIzaSyDCSByXShr7nqZN1_6WLxHnLIGCmBVyvI0"
 
@@ -47,9 +48,10 @@ google_key()
 
 ```
 
-# Analyzing Trends Regarding Gun Violence in New York City
+# DS 2003 Final: NYPD Shooting Incidents
 
 ## Introduction / Abstract
+Gun violence is a prominent issue continuously affecting the lives of millions nationwide.  Despite having some of the strictest gun laws in the United States, guns are the third-leading cause of death for children and teenagers in New York.  On average, New York gun homicides take the lives of 402 people while gun assaults wound 1,522 each year.  Although gun violence continues to prevail, one can determine indicators that increase the likelihood of a shooting incident so that preventative action can be taken.  Throughout this project, we hope to explore the nature of police enforcement activity by creating interactive data visualizations that will identify factors predicting shooting incidents while analyzing the distribution of shootings across New York.
 
 ## Dataset Summary 
 
@@ -59,35 +61,66 @@ nypd <- read_csv("nypd_shootings.csv")
 
 ```
 
+For our final project, we chose to use a Kaggle data set titled “NYPD Shooting Incident Data”.
+
+The NYPD Shooting Incident data set contains a breakdown of every shooting incident in New York City in 2022. The data set contains 26 columns including details about location, time, victim demographics, and perpetrator demographics with each record representing an individual incident. Analyses performed on this data set will allow us to determine patterns in crime across New York City. 
+
+For our final, we will be using X number of columns, but information on the other Y columns is still important in providing adequate context about our data set.  Below we quickly summarize the Y columns that will not be used before providing deeper discussion on the X variables used in this report. 
+
+The following variables are included in the NYPD Shooting Incident data set but will not be examined or discussed in our analysis: incident key, description of location (outside vs inside), precinct, jurisdiction code, location classification, location description (further descriptions about the location), murder flag, perpetrator age, perpetrator race, victim age, victim sex, victim race, x coordinate, y coordinate, geo-reference point, borough boundaries, city council district, police precinct, zip code, and community district. The following variables, as described below, will be utilized in our analysis. Visualizations providing deeper insights into the variables can be found at the end of the document. 
+
+OCCUR_DATE: This column contains the date, in character format, that each shooting incident occurred. Dates range from January 1st, 2022 to December 31st, 2022. 
+
+OCCUR_DATE_CLEAN: This column contains the date, in date time format, that each shooting incident occurred. Dates range from January 1st, 2022 to December 31st, 2022. 
+
+OCCUR_TIME_HOUR: This column tells us the hour, in numeric format, at which the shooting incident occurred. Hours range from 0 to 24. 
+
+PERP_SEX: This column tells us the sex description of the perpetrator of the shooting. 
+
+BORO: This column tells us the borough in which the shooting occurred. Boroughs include the Bronx, Brooklyn, Manhattan, Queens, and Staten Island.
+
+Latitude: The latitude column provides the latitude coordinate, in decimal degrees, at which the incident occurred. Values range from 40.5 to 40.9 and are reported in numeric format. 
+
+Longitude: The longitude column provides the longitude coordinate, in decimal degrees, at which the incident occurred. Values range from -74.2 to -73.7 and are reported in numeric format. 
+
 ## Question 1
 
 ### Question
-Which New York City borough had the most shootings in 2022? Were there regions of especially high incident density within this borough or other boroughs? Additionally, how did the time of day, time of year, or sex of the perpetrator affect the density of shootings in different boroughs?
+In New York City, are the highest shooting rates clustered together geographically, and do the rates differ between biological sex throughout 2022?
 
 ### Chart & Chart Caption
 ```{r}
+
+# Date format for OCCUR_DATE column
+nypd$OCCUR_DATE_CLEAN <- as.Date(nypd$OCCUR_DATE, format = "%m/%d/%Y")
+# Band-aid fix for time of deaths, do it by 0 - 23 for hour, rather than full time
+# will explain issue tomorrow in class (somewhat easy fix)
+nypd$OCCUR_TIME_HOUR <- as.numeric(substr(nypd$OCCUR_TIME, 1, 2))
 
 nypd <- nypd %>% drop_na(Latitude)
 
 shinyApp(
   ui = fluidPage(
     titlePanel("New York City Violent Crime Analysis by Sex"),
-    # Sex Picker
-    selectInput("span", label = h4("Filter by Sex: "),
-              choices = c("All", "Male", "Female"),
-              selected = "All"),
     
-    # Date Picker
-    dateRangeInput("dates", label = h4("Date Range: ")),
+    fluidRow(
+            column(2, selectInput("span", label = h4("Filter by Sex: "), choices = c("All", "Male", "Female"), selected = "All")),
+            column(5, dateRangeInput("dates", label = h4("Date Range: "), start = "2022-01-01", end = "2022-12-31", min = "2022-01-01", max ="2022-12-31")),
+            column(5, sliderInput("sliderRange", label = h4("Hour Range: "), min = 0, max = 24, value = c(0, 24), step = 1))
+    ),
     
-    # Time Picker
-    sliderInput("sliderRange", label = h4("Slider Range: "), min = 0, max = 100, value = c(40, 60)),
  
-    mainPanel(fluidRow((column(12, align = "center", plotOutput(outputId = "shoot_plot")))))
-  ),
-
+    mainPanel(fluidRow(
+                column(4, align = "center", justify = "center", plotOutput(outputId = "nyc_map")), 
+                column(4, align = "center", justify = "center", plotOutput(outputId = "shoot_plot")), 
+                column(4, align = "center", justify = "center", plotOutput(outputId = "borough_map"))
+                )
+             )
+    ),
+  
   server = function(input, output){
-    
+    pt0 <- ggdraw() + draw_image("nyc_map_plot.png")
+    pt1 <- ggdraw() + draw_image("nyc_map.jpg")
     pt2 <- reactive({
       nypd_sex <- nypd
       
@@ -99,6 +132,12 @@ shinyApp(
         nypd_sex <- subset(nypd, PERP_SEX == "F")
       }
       
+      # Filter both dates and times
+      nypd_sex <- nypd_sex %>%
+      filter(nypd_sex$OCCUR_DATE_CLEAN >= input$dates[1] & nypd_sex$OCCUR_DATE_CLEAN <= input$dates[2])
+      
+      nypd_sex <- nypd_sex %>%
+      filter(nypd_sex$OCCUR_TIME_HOUR >= input$sliderRange[1] & nypd_sex$OCCUR_TIME_HOUR <= input$sliderRange[2])
       
       kdeout <- nypd_sex %>% 
       with( 
@@ -109,7 +148,6 @@ shinyApp(
           )
         )
       )
-
       kde_df <- kdeout %>% 
         .[c("x", "y")] %>% 
         cross_df() %>% 
@@ -118,28 +156,18 @@ shinyApp(
       
       (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
       map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
-
-      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
-    
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting incidents across New York City in 2022.")
+      
+      
+    # + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
     })
-    #output$nypd_plot = renderPlot({pt1})
+    output$nyc_map = renderPlot({pt0})
+    output$borough_map = renderPlot({pt1})
     output$shoot_plot = renderPlot({pt2()})
     
-   }
+   }, 
+  options = list(height = 600)
 )
-
-
-
-
-```
-
-```{r fig.align='center'}
-
-p1 <- ggdraw() + draw_image("nyc_map_plot.png")
-p2 <- ggdraw() + draw_image("nyc_map.jpg")
-
-
-plot_grid(p1, NULL, p2, nrow = 1, rel_widths = c(10, 2, 10))
 
 ```
 
@@ -147,18 +175,137 @@ plot_grid(p1, NULL, p2, nrow = 1, rel_widths = c(10, 2, 10))
 ### Discussion 
 
 ### Chart & Widget Justification
+
+In the beginning we were interested in using maps for our question and we decided that a simple map with points to represent each shooting incident would not be sufficient enough because they points would become overwhelming and block out key pieces of data. Therefore, we decided to transition into a density heat map. We believe that this is the appropriate chart for our data because we are studying the rate of shooting incidents in New York City so it would be best to of course plot that data on a map and be able to visually see through color encoding which boroughs have the highest density of shootings. Additionally, we decided to have widgets that can adjust the sex of the perpetrator in order to see if there was any relationship between that and a particualar borough or boroughs. Alongside perpetrator sex, we decided to have a widget that allows us to adjust the time of day. This is useful because there does seem to be certain times of day that certain boroughs are more prevalent to shootings than others. Hinting at a possible relationship between the two. Finally, we added a widget that allows the user to filter by a specific date range. Our reasoning behind this is that at different times of the year there may be certain boroughs that spike in their rate of shooting incidents and dip other times of the year. With that being said, we believe the density-based heat map and the three widgets chosen are perfect for exploring our question of which boroughs may experience the highest rate of shooting incidents throughout 2022. 
 
 ## Question 2
 
 ### Question
+Using the results discovered in question 1, is there a relationship between the boroughs with the highest shooting rates?
 
 ### Chart & Chart Caption
+```{r}
+
+nypd_bronx <- subset(nypd, BORO == "BRONX")
+nypd_brooklyn <- subset(nypd, BORO == "BROOKLYN")
+
+shinyApp(
+  ui = fluidPage(
+    titlePanel("New York City Violent Crime Analysis by Sex"),
+    
+    fluidRow(
+            column(2, selectInput("span", label = h4("Filter by Sex: "), choices = c("All", "Male", "Female"), selected = "All")),
+            column(5, dateRangeInput("dates", label = h4("Date Range: "), start = "2022-01-01", end = "2022-12-31", min = "2022-01-01", max ="2022-12-31")),
+            column(5, sliderInput("sliderRange", label = h4("Hour Range: "), min = 0, max = 24, value = c(0, 24), step = 1))
+    ),
+    
+ 
+    mainPanel(fluidRow(
+                column(6, align = "center", justify = "center", plotOutput(outputId = "bronx_map")), 
+                column(6, align = "center", justify = "center", plotOutput(outputId = "brooklyn_map"))
+                )
+             )
+    ),
+  
+  server = function(input, output){
+    pt1 <- reactive({
+      
+      nypd_sex <- nypd_bronx
+      
+      if (input$span == "Male") {
+        nypd_sex <- subset(nypd_bronx, PERP_SEX == "M")
+      }
+      
+      else if (input$span == "Female") {
+        nypd_sex <- subset(nypd_bronx, PERP_SEX == "F")
+      }
+      
+      # Filter both dates and times
+      nypd_sex <- nypd_sex %>%
+      filter(nypd_sex$OCCUR_DATE_CLEAN >= input$dates[1] & nypd_sex$OCCUR_DATE_CLEAN <= input$dates[2])
+      
+      nypd_sex <- nypd_sex %>%
+      filter(nypd_sex$OCCUR_TIME_HOUR >= input$sliderRange[1] & nypd_sex$OCCUR_TIME_HOUR <= input$sliderRange[2])
+      
+      kdeout <- nypd_sex %>% 
+      with( 
+        MASS::kde2d(Longitude, Latitude, n = 101,
+          lims = c(
+            scales::expand_range(range(Longitude), .20),
+            scales::expand_range(range(Latitude), .20)
+          )
+        )
+      )
+      kde_df <- kdeout %>% 
+        .[c("x", "y")] %>% 
+        cross_df() %>% 
+        rename("Longitude" = "x", "Latitude" = "y") %>% 
+        mutate(density = as.vector(kdeout$z)) 
+      
+      (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
+      map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting incidents across the Bronx in 2022.")
+      
+    })
+    pt2 <- reactive({
+      nypd_sex <- nypd_brooklyn
+      
+      if (input$span == "Male") {
+        nypd_sex <- subset(nypd_brooklyn, PERP_SEX == "M")
+      }
+      
+      else if (input$span == "Female") {
+        nypd_sex <- subset(nypd_brooklyn, PERP_SEX == "F")
+      }
+      
+      # Filter both dates and times
+      nypd_sex <- nypd_sex %>%
+      filter(nypd_sex$OCCUR_DATE_CLEAN >= input$dates[1] & nypd_sex$OCCUR_DATE_CLEAN <= input$dates[2])
+      
+      nypd_sex <- nypd_sex %>%
+      filter(nypd_sex$OCCUR_TIME_HOUR >= input$sliderRange[1] & nypd_sex$OCCUR_TIME_HOUR <= input$sliderRange[2])
+      
+      kdeout <- nypd_sex %>% 
+      with( 
+        MASS::kde2d(Longitude, Latitude, n = 101,
+          lims = c(
+            scales::expand_range(range(Longitude), .20),
+            scales::expand_range(range(Latitude), .20)
+          )
+        )
+      )
+      kde_df <- kdeout %>% 
+        .[c("x", "y")] %>% 
+        cross_df() %>% 
+        rename("Longitude" = "x", "Latitude" = "y") %>% 
+        mutate(density = as.vector(kdeout$z)) 
+      
+      (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
+      map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting incidents across Brooklyn in 2022.")
+      
+      
+    # + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
+    })
+    output$bronx_map = renderPlot({pt1()})
+    output$brooklyn_map = renderPlot({pt2()})
+    
+   }, 
+  options = list(height = 600)
+)
+
+```
 
 ### Discussion 
 
 ### Chart & Widget Justification
 
+Similar to question 1, we were interested in using maps for our question and we decided that a simple map with points to represent each shooting incident would not be sufficient enough because they points would become overwhelming and block out key pieces of data. Therefore, we decided to transition into a density heat map. We believe that this is the appropriate chart for our data because we are studying the rate of shooting incidents in the Bronx and Brooklyn, so it would be best to of course plot that data on a map and be able to visually see through color the density of shootings in each borough. Additionally, we decided to have widgets that can adjust the sex of the perpetrator in order to see if there was any relationship between that and a particualar borough. Alongside perpetrator sex, we decided to have a widget that allows us to adjust the time of day. This is useful because there does seem to be certain times of day that certain boroughs are more prevalent to shootings than others. Hinting at a possible relationship between the two. Finally, we added a widget that allows the user to filter by a specific date range. Our reasoning behind this is that at different times of the year there may be certain boroughs that spike in their rate of shooting incidents and dip other times of the year. With that being said, we believe the density-based heat map and the three widgets chosen are perfect for exploring our question of if there is a relationship between the two boroughs with the highest rate of shootings and the borough itself. 
+
+
 ## Conclusion
+
+## Appendix
 
 
 
