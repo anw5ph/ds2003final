@@ -110,17 +110,17 @@ shinyApp(
     ),
     
  
-    mainPanel(fluidRow(
+    fluidRow(
                 column(4, align = "center", justify = "center", plotOutput(outputId = "nyc_map")), 
                 column(4, align = "center", justify = "center", plotOutput(outputId = "shoot_plot")), 
                 column(4, align = "center", justify = "center", plotOutput(outputId = "borough_map"))
                 )
-             )
+             
     ),
   
   server = function(input, output){
-    pt0 <- ggdraw() + draw_image("nyc_map_plot.png")
-    pt1 <- ggdraw() + draw_image("nyc_map.jpg")
+    pt0 <- ggdraw() + draw_image("nyc_map_plot.png") + labs(title = "Map of New York City", caption = "Google Maps view of New York City.")
+    pt1 <- ggdraw() + draw_image("nyc_map.jpg") + labs(title = "Map of New York City Boroughs", caption = "Color-coded map of New York City boroughs.")
     pt2 <- reactive({
       nypd_sex <- nypd
       
@@ -156,7 +156,7 @@ shinyApp(
       
       (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
       map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
-      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting incidents across New York City in 2022.")
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "Shooting Density Across New York City", subtitle = "NYPD, 2022", x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting \n incidents across New York City in 2022.")
       
       
     # + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
@@ -200,11 +200,11 @@ shinyApp(
     ),
     
  
-    mainPanel(fluidRow(
+    fluidRow(
                 column(6, align = "center", justify = "center", plotOutput(outputId = "bronx_map")), 
                 column(6, align = "center", justify = "center", plotOutput(outputId = "brooklyn_map"))
                 )
-             )
+             
     ),
   
   server = function(input, output){
@@ -244,7 +244,7 @@ shinyApp(
       
       (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
       map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
-      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting incidents across the Bronx in 2022.")
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "Shooting Density Across the Bronx", subtitle = "NYPD, 2022", x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting \n incidents across the Bronx in 2022.")
       
     })
     pt2 <- reactive({
@@ -282,7 +282,7 @@ shinyApp(
       
       (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
       map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
-      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting incidents across Brooklyn in 2022.")
+      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "Shooting Density Across Brooklyn", subtitle = "NYPD, 2022", x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting \n incidents across Brooklyn in 2022.")
       
       
     # + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
@@ -306,6 +306,28 @@ Similar to question 1, we were interested in using maps for our question and we 
 ## Conclusion
 
 ## Appendix
+
+```{r fig.align='center'}
+
+nypd2=nypd%>%
+  separate(OCCUR_DATE,c('Month','Day','Year'),'/')
+date_plot = ggplot(nypd2,aes(x=Month))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents', title='Number of Shooting Incidents by Month',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,250)
+
+nypd3=nypd%>%
+  separate(OCCUR_TIME, c('Hour','Minute','Second'), ':')
+time_plot = ggplot(nypd3,aes(x=Hour))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Hour',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,150)
+
+sex_plot = ggplot(nypd,aes(x=PERP_SEX))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(x='Sex',y='Number of Perpetrators',title='Number of Perpetrators by Sex',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,1100)
+
+boro_plot = ggplot(nypd,aes(x=BORO))+geom_bar(fill = "royalblue1", color = "royalblue4")+labs(x='Borough',y='Number of Incidents',title='Number of Shooting Incidents by Borough',subtitle='NYPD, 2022')+theme_minimal()+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank()) + ylim(0,600)
+
+lat_plot = ggplot(nypd,aes(x=Latitude))+geom_histogram(bins=41,fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Latitude',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,125)
+
+long_plot = ggplot(nypd,aes(x=Longitude))+geom_histogram(bins=41,fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Longitude',subtitle='NYPD, 2022')+theme(panel.grid.major.x = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ylim(0,225)
+
+grid.arrange(date_plot, time_plot, sex_plot, boro_plot,lat_plot, long_plot, ncol = 2, nrow = 3)
+
+```
 
 
 
