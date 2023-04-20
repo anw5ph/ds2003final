@@ -305,27 +305,35 @@ Similar to question 1, we were interested in using maps for our question and we 
 
 ## Conclusion
 
+Recent reports regarding gun violence in the United States have confirmed definitively that the nation is dealing with a large scale, indisputable problem. Despite the US’s classification as a high income, industrialized society, cities nationwide are still plagued by rates of gun violence that far exceed those of other nations with similar socioeconomic standings. New York City is of particular interest when analyzing patterns of violent crime, as it is one of the most densely populated regions in the country and is often a focal point of discourse regarding gun control. An epicenter for commerce and a home to millions, New York plays a major role in the functioning and identity of the United States; thus, it is of utmost importance to devote time and resources to identifying patterns of crime here, as findings may ultimately inform legislative decisions and guide law enforcement agents in their efforts to prevent future incidents. By examining geographical changes in incident density over time, we were able to deduce trends that occurred over the course of 2022 as well as trends that were dependent upon the time of day and/or sex of the perpetrator. We also compared shooting incidence between Brooklyn and the Bronx, as these two locations housed notable hotspots of high shooting density. Our results can be used to glean insights into factors that may underlie fluctuations in shooting rates and to inform law enforcement of regions and time frames that are typically associated with the most shootings. Our analysis went beyond the scope of simply determining when and where shootings typically occurred in 2022; our use of precise location (latitude and longitude) in generating the heat maps allowed us to unveil subtle changes in incidence related to perpetrator sex, time of day and time of year. For as long as gun violence continues to devastate communities throughout the country, analyses like our own will remain paramount in efforts to identify risks and reduce the number of firearm-related deaths. 
+
 ## Appendix
 
-```{r fig.align='center'}
+```{r, fig.show="hold", out.width="50%"}
 
-nypd2=nypd%>%
-  separate(OCCUR_DATE,c('Month','Day','Year'),'/')
-date_plot = ggplot(nypd2,aes(x=Month))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents', title='Number of Shooting Incidents by Month',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,250)
+nypd2 <- nypd %>% separate(OCCUR_DATE,c('Month','Day','Year'),'/')
+ggplot(nypd2,aes(x=Month))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_bw() + labs(y='Number of Incidents', title='Number of Shooting Incidents by Month',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,250)
 
-nypd3=nypd%>%
-  separate(OCCUR_TIME, c('Hour','Minute','Second'), ':')
-time_plot = ggplot(nypd3,aes(x=Hour))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Hour',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,150)
+nypd3 <- nypd %>% separate(OCCUR_TIME, c('Hour','Minute','Second'), ':')
+ggplot(nypd3,aes(x=Hour))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_bw()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Hour',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank(), axis.text.x = element_text(size = 8))+ylim(0,150)
 
-sex_plot = ggplot(nypd,aes(x=PERP_SEX))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(x='Sex',y='Number of Perpetrators',title='Number of Perpetrators by Sex',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,1100)
+#grid.arrange(date_plot, time_plot, sex_plot, boro_plot,lat_plot, long_plot, ncol = 2, nrow = 3)
 
-boro_plot = ggplot(nypd,aes(x=BORO))+geom_bar(fill = "royalblue1", color = "royalblue4")+labs(x='Borough',y='Number of Incidents',title='Number of Shooting Incidents by Borough',subtitle='NYPD, 2022')+theme_minimal()+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank()) + ylim(0,600)
+```
 
-lat_plot = ggplot(nypd,aes(x=Latitude))+geom_histogram(bins=41,fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Latitude',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,125)
+``` {r, fig.show="hold", out.width="50%"}
 
-long_plot = ggplot(nypd,aes(x=Longitude))+geom_histogram(bins=41,fill = "royalblue1", color = "royalblue4")+theme_minimal()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Longitude',subtitle='NYPD, 2022')+theme(panel.grid.major.x = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ylim(0,225)
+ggplot(nypd,aes(x=PERP_SEX))+geom_bar(fill = "royalblue1", color = "royalblue4")+theme_bw()+labs(x='Sex',y='Number of Perpetrators',title='Number of Perpetrators by Sex',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,1100)
 
-grid.arrange(date_plot, time_plot, sex_plot, boro_plot,lat_plot, long_plot, ncol = 2, nrow = 3)
+ggplot(nypd,aes(x=BORO))+geom_bar(fill = "royalblue1", color = "royalblue4")+labs(x='Borough',y='Number of Incidents',title='Number of Shooting Incidents by Borough',subtitle='NYPD, 2022')+theme_bw()+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank(), axis.text.x = element_text(vjust = 0.5, size = 8)) + ylim(0,600)
+
+```
+
+``` {r, fig.show="hold", out.width="50%"}
+
+ggplot(nypd,aes(x=Latitude))+geom_histogram(bins=41,fill = "royalblue1", color = "royalblue4")+theme_bw()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Latitude',subtitle='NYPD, 2022')+theme(plot.title=element_text(hjust=0.5),plot.subtitle=element_text(hjust=0.5),panel.grid.major.x = element_blank())+ylim(0,125)
+
+ggplot(nypd,aes(x=Longitude))+geom_histogram(bins=41,fill = "royalblue1", color = "royalblue4")+theme_bw()+labs(y='Number of Incidents',title='Number of Shooting Incidents by Longitude',subtitle='NYPD, 2022')+theme(panel.grid.major.x = element_blank())+ylim(0,225)
 
 ```
 
