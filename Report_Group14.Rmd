@@ -99,7 +99,7 @@ The PASSNYC dataset contains information about 1272 public schools in New York C
 
 * <span style="color: #FAA0A0"> **Effective School Leadership Rating** </span>: This column tells us how well school leadership inspires the school community with a clear instructional vision and effectively distributes leadership to realize this vision, Rates are given as categorical classifications of "Not Meeting Target", "Approaching Target", "Meeting Target", "Exceeding Target" which we have converted to "Low", "Medium", "High", and "Very High."
 
-* <span style="color: #FAA0A0"> **Strong Family-Community Ties Rating** </span>: This column lists the student attendance rate for each school. These rates are calculated by dividing the total number of days attended by all students by the total number of days on register for all students. Rates are given as categorical classifications of "Not Meeting Target", "Approaching Target", "Meeting Target", "Exceeding Target" which we have converted to "Low", "Medium", "High", and "Very High."
+* <span style="color: #FAA0A0"> **Strong Family-Community Ties Rating** </span>: This column tells us how well the school forms effective partnerships with families to improve the school. Rates are given as categorical classifications of "Not Meeting Target", "Approaching Target", "Meeting Target", "Exceeding Target" which we have converted to "Low", "Medium", "High", and "Very High."
 
 * <span style="color: #FAA0A0"> **Borough** </span>: This column containers the borough in which the school is located. We added this column by matching each neighborhood in the City column to its corresponding borough.
 
