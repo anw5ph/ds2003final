@@ -1,0 +1,338 @@
+City,Borough
+Bath Beach,Brooklyn
+Allerton,Bronx
+Battery Park City,Manhattan
+Arverne,Queens
+Annadale,Staten Island
+Bay Ridge,Brooklyn
+Bathgate,Bronx
+Beekman Place,Manhattan
+Astoria,Queens
+Arden Heights,Staten Island
+Bedford Stuyvesant,Brooklyn
+Baychester,Bronx
+Carnegie Hill,Manhattan
+Astoria Heights,Queens
+Arlington,Staten Island
+Bensonhurst,Brooklyn
+Bedford Park,Bronx
+Chelsea,Manhattan
+Auburndale,Queens
+Arrochar,Staten Island
+Bergen Beach,Brooklyn
+Belmont,Bronx
+Chinatown,Manhattan
+Bay Terrace,Queens
+Bay Terrace,Staten Island
+Boerum Hill,Brooklyn
+Bronxdale,Bronx
+Civic Center,Manhattan
+Bayside,Queens
+Bloomfield,Staten Island
+Borough Park,Brooklyn
+Bronx Park South,Bronx
+Clinton,Manhattan
+Bayswater,Queens
+Bulls Head,Staten Island
+Brighton Beach,Brooklyn
+Bronx River,Bronx
+East Harlem,Manhattan
+Beechhurst,Queens
+Butler Manor,Staten Island
+Broadway Junction,Brooklyn
+Castle Hill,Bronx
+East Village,Manhattan
+Bellaire,Queens
+Castleton Corners,Staten Island
+Brooklyn Heights,Brooklyn
+City Island,Bronx
+Financial District,Manhattan
+Belle Harbor,Queens
+Charleston,Staten Island
+Brownsville,Brooklyn
+Claremont Village,Bronx
+Flatiron,Manhattan
+Bellerose,Queens
+Chelsea,Staten Island
+Bushwick,Brooklyn
+Clason Point,Bronx
+Gramercy,Manhattan
+Blissville,Queens
+Clifton,Staten Island
+Canarsie,Brooklyn
+Concourse,Bronx
+Greenwich Village,Manhattan
+Breezy Point,Queens
+Concord,Staten Island
+Carroll Gardens,Brooklyn
+Concourse Village,Bronx
+Hamilton Heights,Manhattan
+Briarwood,Queens
+Dongan Hills,Staten Island
+City Line,Brooklyn
+Co-op City,Bronx
+Harlem (Central),Manhattan
+Broad Channel,Queens
+Egbertville,Staten Island
+Clinton Hill,Brooklyn
+Country Club,Bronx
+Herald Square,Manhattan
+Brookville,Queens
+Elm Park,Staten Island
+Cobble Hill,Brooklyn
+East Tremont,Bronx
+Hudson Square,Manhattan
+Cambria Heights,Queens
+Eltingville,Staten Island
+Coney Island,Brooklyn
+Eastchester,Bronx
+Inwood,Manhattan
+Clearview,Queens
+Emerson Hill,Staten Island
+Crown Heights,Brooklyn
+Edenwald,Bronx
+Lenox Hill,Manhattan
+College Point,Queens
+Fox Hills,Staten Island
+Cypress Hills,Brooklyn
+Edgewater Park,Bronx
+Lincoln Square,Manhattan
+Douglaston,Queens
+Graniteville,Staten Island
+Ditmas Park,Brooklyn
+Fieldston,Bronx
+Little Italy,Manhattan
+Dutch Kills,Queens
+Grant City,Staten Island
+Downtown,Brooklyn
+Fordham,Bronx
+Lower East Side,Manhattan
+East Elmhurst,Queens
+Grasmere,Staten Island
+DUMBO,Brooklyn
+High Bridge,Bronx
+Manhattan Valley,Manhattan
+Edgemere,Queens
+Great Kills,Staten Island
+Dyker Heights,Brooklyn
+Hunts Point,Bronx
+Manhattanville,Manhattan
+Elmhurst,Queens
+Greenridge,Staten Island
+East Flatbush,Brooklyn
+Kingsbridge,Bronx
+Midtown South,Manhattan
+Far Rockaway,Queens
+Grymes Hill,Staten Island
+New York,Manhattan
+Kingsbridge Heights,Bronx
+Midtown,Manhattan
+Floral Park,Queens
+Heartland Village,Staten Island
+East Williamsburg,Brooklyn
+Longwood,Bronx
+Morningside Heights,Manhattan
+Flushing,Queens
+Howland Hook,Staten Island
+Farragut,Brooklyn
+Marble Hill,Bronx
+Murray Hill,Manhattan
+Flushing (Downtown),Queens
+Huguenot,Staten Island
+Flatbush,Brooklyn
+Melrose,Bronx
+NoHo,Manhattan
+Forest Hills,Queens
+Lighthouse Hill,Staten Island
+Flatlands,Brooklyn
+Morris Heights,Bronx
+Roosevelt Island,Manhattan
+Forest Hills Gardens,Queens
+Livingston,Staten Island
+Fort Greene,Brooklyn
+Morris Park,Bronx
+SoHo,Manhattan
+Fresh Meadows,Queens
+Manor Heights,Staten Island
+Fort Hamilton,Brooklyn
+Morrisania,Bronx
+South Village,Manhattan
+Glen Oaks,Queens
+Mariner's Harbor,Staten Island
+Fulton Ferry,Brooklyn
+Mott Haven,Bronx
+Stuyvesant Town,Manhattan
+Glendale,Queens
+Midland Beach,Staten Island
+Georgetown,Brooklyn
+Mount Eden,Bronx
+Sutton Place,Manhattan
+Hammels,Queens
+New Brighton,Staten Island
+Gerritsen Beach,Brooklyn
+Mount Hope,Bronx
+Times Square,Manhattan
+Hillcrest,Queens
+New Dorp,Staten Island
+Gowanus,Brooklyn
+North Riverdale,Bronx
+Tribeca,Manhattan
+Hollis,Queens
+New Dorp Beach,Staten Island
+Gravesend,Brooklyn
+Norwood,Bronx
+Tudor City,Manhattan
+Holliswood,Queens
+New Springville,Staten Island
+Greenpoint,Brooklyn
+Olinville,Bronx
+Turtle Bay,Manhattan
+Howard Beach,Queens
+Oakwood,Staten Island
+Highland Park,Brooklyn
+Parkchester,Bronx
+Union Square,Manhattan
+Hunters Point,Queens
+Old Place,Staten Island
+Homecrest,Brooklyn
+Pelham Bay,Bronx
+Upper East Side,Manhattan
+Jackson Heights,Queens
+Old Town,Staten Island
+Kensington,Brooklyn
+Pelham Gardens,Bronx
+Upper West Side,Manhattan
+Jamaica,Queens
+Park Hill,Staten Island
+Kings Highway,Brooklyn
+Pelham Parkway,Bronx
+Wall Street,Manhattan
+Jamaica Center,Queens
+Pleasant Plains,Staten Island
+Manhattan Beach,Brooklyn
+Port Morris,Bronx
+Washington Heights,Manhattan
+Jamaica Estates,Queens
+Port Ivory,Staten Island
+Manhattan Terrace,Brooklyn
+Riverdale,Bronx
+West Village,Manhattan
+Jamaica Hills,Queens
+Port Richmond,Staten Island
+Mapleton,Brooklyn
+Schuylerville,Bronx
+Yorkville,Manhattan
+Kew Gardens,Queens
+Prince's Bay,Staten Island
+Marine Park,Brooklyn
+Soundview,Bronx
+Kew Gardens Hills,Queens
+Randall Manor,Staten Island
+Midwood,Brooklyn
+Spuyten Duyvil,Bronx
+Laurelton,Queens
+Richmond Town,Staten Island
+Mill Basin,Brooklyn
+Throgs Neck,Bronx
+Lefrak City,Queens
+Richmond Valley,Staten Island
+Mill Island,Brooklyn
+Unionport,Bronx
+Lindenwood,Queens
+Rosebank,Staten Island
+Navy Yard,Brooklyn
+University Heights,Bronx
+Little Neck,Queens
+Rossville,Staten Island
+New Lots,Brooklyn
+Van Nest,Bronx
+Long Island City,Queens
+Sandy Ground,Staten Island
+North Side,Brooklyn
+Wakefield,Bronx
+Malba,Queens
+Shore Acres,Staten Island
+Ocean Hill,Brooklyn
+West Farms,Bronx
+Maspeth,Queens
+Silver Lake,Staten Island
+Ocean Parkway,Brooklyn
+Westchester Square,Bronx
+Middle Village,Queens
+South Beach,Staten Island
+Paerdegat Basin,Brooklyn
+Williamsbridge,Bronx
+Murray Hill,Queens
+St. George,Staten Island
+Park Slope,Brooklyn
+Woodlawn,Bronx
+Neponsit,Queens
+Stapleton,Staten Island
+Plum Beach,Brooklyn
+New Hyde Park,Queens
+Sunnyside,Staten Island
+Prospect Heights,Brooklyn
+Corona,Queens
+North Corona,Queens
+Todt Hill,Staten Island
+Prospect Lefferts Gardens,Brooklyn
+Oakland Gardens,Queens
+Tompkinsville,Staten Island
+Prospect Park South,Brooklyn
+Ozone Park,Queens
+Tottenville,Staten Island
+Red Hook,Brooklyn
+Pomonok,Queens
+Travis,Staten Island
+Remsen Village,Brooklyn
+Queens Village,Queens
+Ward Hill,Staten Island
+Rugby,Brooklyn
+Queensboro Hill,Queens
+West Brighton,Staten Island
+Sea Gate,Brooklyn
+Ravenswood,Queens
+Westerleigh,Staten Island
+Sheepshead Bay,Brooklyn
+Rego Park,Queens
+Willowbrook,Staten Island
+South Side,Brooklyn
+Richmond Hill,Queens
+Woodrow,Staten Island
+Spring Creek,Brooklyn
+Ridgewood,Queens
+Starrett City,Brooklyn
+Rochdale,Queens
+Stuyvesant Heights,Brooklyn
+Rockaway Park,Queens
+Sunset Park,Brooklyn
+Rosedale,Queens
+Tompkins Park North,Brooklyn
+Roxbury,Queens
+Vinegar Hill,Brooklyn
+Seaside,Queens
+Weeksville,Brooklyn
+Somerville,Queens
+West Brighton,Brooklyn
+Corona,Queens
+South Corona,Queens
+Williamsburg,Brooklyn
+South Jamaica,Queens
+Windsor Terrace,Brooklyn
+South Ozone Park,Queens
+Wingate,Brooklyn
+Springfield Gardens,Queens
+St. Albans,Queens
+Steinway,Queens
+Sunnyside,Queens
+Sunnyside Gardens,Queens
+Utopia,Queens
+Whitestone,Queens
+Woodhaven,Queens
+Woodside,Queens
+Bronx,Bronx
+Brooklyn,Brooklyn
+Staten Island,Staten Island
+South Richmond Hill,Queens
+Rockaway Beach,Queens
+Saint Albans,Queens

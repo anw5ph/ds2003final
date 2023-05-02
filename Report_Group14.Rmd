@@ -5,10 +5,10 @@ author: "Alexander Williams (anw5ph), Evelyn Tse (eyt7ph), Sam Remmey (sqr8ap), 
 output: 
     html_document:
       number_sections: no
-      # toc: TRUE
-      # toc_depth: 4
-      # toc_float: true
-      # toc_collapsed: true
+      toc: TRUE
+      toc_depth: 4
+      toc_float: true
+      toc_collapsed: true
       theme: journal
       code_folding: show
       
@@ -186,114 +186,73 @@ In New York, five police precincts made of low-income neighborhoods contained ne
 ## Question 2
 
 ### Question
-Using the results discovered in question 1, is there a relationship between the boroughs with the highest shooting rates?
+Using the results discovered in question 1, is there a relationship between the boroughs with the highest shooting rates in terms of public school education quality or economic status?
 
 ### Chart & Chart Caption
 ```{r}
 
-nypd_bronx <- subset(nypd, BORO == "BRONX")
-nypd_brooklyn <- subset(nypd, BORO == "BROOKLYN")
+schools <- read_csv("nyc_schools.csv")
+cities <- read_csv("city_bor.csv")
+colnames(schools)[17] = "ENI"
+colnames(schools)[34] = "ESLR"
+colnames(schools)[36] = "SFCTR"
+
+schools <- subset(schools, (ESLR != "N/A") &(SFCTR != "N/A"))
+
+schools$City <- stringr::str_to_title(schools$City)
+schools_clean <- merge(schools, cities, by = "City", all.x = TRUE)
+
+schools_clean$ENI = as.numeric(schools_clean$ENI)
+schools_clean$ENI = cut(schools_clean$ENI, 4, labels = c("Low", "Medium", "High", "Very High"))
+schools_clean$ESLR = factor(schools_clean$ESLR, levels = c("Not Meeting Target", "Approaching Target", "Meeting Target", "Exceeding Target"), labels = c("Low", "Medium", "High", "Very High"))
+schools_clean$SFCTR = factor(schools_clean$SFCTR, levels = c("Not Meeting Target", "Approaching Target", "Meeting Target", "Exceeding Target"), labels = c("Low", "Medium", "High", "Very High"))
 
 shinyApp(
   ui = fluidPage(
-    titlePanel("New York City Violent Crime Analysis by Sex"),
+    titlePanel("New York City School System Analysis"),
     
     fluidRow(
-            column(2, selectInput("span", label = h4("Filter by Sex: "), choices = c("All", "Male", "Female"), selected = "All")),
-            column(5, dateRangeInput("dates", label = h4("Date Range: "), start = "2022-01-01", end = "2022-12-31", min = "2022-01-01", max ="2022-12-31")),
-            column(5, sliderInput("sliderRange", label = h4("Hour Range: "), min = 0, max = 24, value = c(0, 24), step = 1))
+            column(4, checkboxGroupInput("check", label = h3("Boroughs: "), choices = list("Bronx" = "Bronx", "Brooklyn" = "Brooklyn", "Manhattan" = "Manhattan", "Queens" = "Queens", "Staten Island" = "Staten Island"), selected = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")),),
+            column(4, radioButtons("radio", label = h3("Focus: "), choices = list("None Selected" = "None", "Economic Need Index" = "ENI", "Effective School Leadership Rating" = "ESLR", "Strong Family-Community Ties Rating" = "SFCTR"),selected = "None")), 
+            column(4, selectInput("span", label = h3("Levels: "), choices = c("All", "Low", "Medium", "High", "Very High"), selected = "All")),
     ),
     
  
-    fluidRow(
-                column(6, align = "center", justify = "center", plotOutput(outputId = "bronx_map")), 
-                column(6, align = "center", justify = "center", plotOutput(outputId = "brooklyn_map"))
-                )
+    fluidRow( 
+                column(12, align = "center", justify = "center", plotOutput(outputId = "school_map"))
+    )
              
     ),
   
   server = function(input, output){
     pt1 <- reactive({
       
-      nypd_sex <- nypd_bronx
-      
-      if (input$span == "Male") {
-        nypd_sex <- subset(nypd_bronx, PERP_SEX == "M")
-      }
-      
-      else if (input$span == "Female") {
-        nypd_sex <- subset(nypd_bronx, PERP_SEX == "F")
-      }
-      
-      # Filter both dates and times
-      nypd_sex <- nypd_sex %>%
-      filter(nypd_sex$OCCUR_DATE_CLEAN >= input$dates[1] & nypd_sex$OCCUR_DATE_CLEAN <= input$dates[2])
-      
-      nypd_sex <- nypd_sex %>%
-      filter(nypd_sex$OCCUR_TIME_HOUR >= input$sliderRange[1] & nypd_sex$OCCUR_TIME_HOUR <= input$sliderRange[2])
-      
-      kdeout <- nypd_sex %>% 
-      with( 
-        MASS::kde2d(Longitude, Latitude, n = 101,
-          lims = c(
-            scales::expand_range(range(Longitude), .20),
-            scales::expand_range(range(Latitude), .20)
-          )
-        )
-      )
-      kde_df <- kdeout %>% 
-        .[c("x", "y")] %>% 
-        cross_df() %>% 
-        rename("Longitude" = "x", "Latitude" = "y") %>% 
-        mutate(density = as.vector(kdeout$z)) 
-      
-      (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
+      (bbox <- make_bbox(Longitude, Latitude, data = schools_clean))
       map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
-      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "Shooting Density Across the Bronx", subtitle = "NYPD, 2022", x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting \n incidents across the Bronx in 2022.")
+      schools_clean <- schools_clean %>% filter(Borough %in% input$check)
+      if (input$radio == "None") {
+         ggmap(map, extent = "device") + geom_point(data = schools_clean, aes(x = Longitude, y = Latitude)) + labs(title = "New York City School System Analysis", x = "lon", y ="lat", caption = "A plot displaying the schools with particular \n demographic characteristics in New York City.")
+        
+      }
+      else {
+        
+        if (input$span == "All") {
+          ggmap(map, extent = "device") + geom_point(data = schools_clean, aes(x = Longitude, y = Latitude, color = !!as.name(input$radio))) + labs(title = "New York City School System Analysis", x = "lon", y ="lat", caption = "A plot displaying the schools with particular \n demographic characteristics in New York City.")
+          
+        }
+        else {
+          #colors = !!as.name(input$radio)
+          #schools_clean <- schools_clean %>% filter(!!as.name(input$radio) == input$span)
+          ggmap(map, extent = "device") + geom_point(data = schools_clean %>% filter(!!as.name(input$radio) == input$span), aes(x = Longitude, y = Latitude, color = !!as.name(input$radio))) + labs(title = "New York City School System Analysis", x = "lon", y ="lat", caption = "A plot displaying the schools with particular \n demographic characteristics in New York City.")
+          
+        }
+        
+      }
+     
       
     })
-    pt2 <- reactive({
-      nypd_sex <- nypd_brooklyn
-      
-      if (input$span == "Male") {
-        nypd_sex <- subset(nypd_brooklyn, PERP_SEX == "M")
-      }
-      
-      else if (input$span == "Female") {
-        nypd_sex <- subset(nypd_brooklyn, PERP_SEX == "F")
-      }
-      
-      # Filter both dates and times
-      nypd_sex <- nypd_sex %>%
-      filter(nypd_sex$OCCUR_DATE_CLEAN >= input$dates[1] & nypd_sex$OCCUR_DATE_CLEAN <= input$dates[2])
-      
-      nypd_sex <- nypd_sex %>%
-      filter(nypd_sex$OCCUR_TIME_HOUR >= input$sliderRange[1] & nypd_sex$OCCUR_TIME_HOUR <= input$sliderRange[2])
-      
-      kdeout <- nypd_sex %>% 
-      with( 
-        MASS::kde2d(Longitude, Latitude, n = 101,
-          lims = c(
-            scales::expand_range(range(Longitude), .20),
-            scales::expand_range(range(Latitude), .20)
-          )
-        )
-      )
-      kde_df <- kdeout %>% 
-        .[c("x", "y")] %>% 
-        cross_df() %>% 
-        rename("Longitude" = "x", "Latitude" = "y") %>% 
-        mutate(density = as.vector(kdeout$z)) 
-      
-      (bbox <- make_bbox(Longitude, Latitude, data = nypd_sex))
-      map <- get_stamenmap(bbox, zoom = 12, maptype = "toner-lite")
-      ggmap(map, extent = "device") + geom_contour_filled(aes(Longitude, Latitude, z = density), kde_df, alpha = 0.65) + labs(title = "Shooting Density Across Brooklyn", subtitle = "NYPD, 2022", x = "lon", y ="lat", caption = "A heat map displaying the distribution of shooting \n incidents across Brooklyn in 2022.")
-      
-      
-    # + labs(title = "New York City Violent Crime Correlation Map", x = "Longitude", y = "Latitude") + theme(plot.title = element_text(face="bold"), axis.title.x = element_text(face = "bold"), axis.title.y = element_text(face = "bold"))
-    })
-    output$bronx_map = renderPlot({pt1()})
-    output$brooklyn_map = renderPlot({pt2()})
+   
+    output$school_map = renderPlot({pt1()})
     
    }, 
   options = list(height = 600)
